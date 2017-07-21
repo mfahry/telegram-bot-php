@@ -1253,19 +1253,19 @@ class Telegram {
 	 * \return the String users's text
 	 */
 	public function Text() {
-		return $this->data["message"] ["text"];
+		return array_key_exists("text", $this->data["message"]) ? $this->data["message"]["text"] : "";
 	}
 
   public function Photo() {
-    return $this->data["message"] ["photo"];
+    return array_key_exists("photo", $this->data["message"]) ? $this->data["message"]["photo"] : "";
   }
-  
+
   public function Caption() {
 	return $this->data["message"] ["caption"];
   }
 
   public function Document() {
-    return $this->data["message"] ["document"];
+    return array_key_exists("document", $this->data["message"]) ? $this->data["message"]["document"] : "";
   }
 
 	/// Get the chat_id of the current message

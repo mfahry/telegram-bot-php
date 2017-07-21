@@ -30,7 +30,7 @@ class Welcome extends CI_Controller {
 		$chat_group_name = $this->telegram->messageFromGroupTitle();
 		$message_date = date("Y-m-d H:i:s", $this->telegram->Date());
 
-		if($this->telegram->Text() != null) {
+		if($this->telegram->Text() != "") {
 
 			$message = $this->telegram->Text();
 
@@ -437,7 +437,7 @@ class Welcome extends CI_Controller {
 				}*/
 			}
 		}
-		else if($this->telegram->Photo() != null) {
+		else if($this->telegram->Photo() != "") {
 			$where = array(
 				"username_id" => $username_id
 			);
@@ -488,7 +488,7 @@ class Welcome extends CI_Controller {
 				}
 			}
 		}
-		else if($this->telegram->Document() != null) {
+		else if($this->telegram->Document() != "") {
 			$where = array(
 				"username_id" => $username_id
 			);

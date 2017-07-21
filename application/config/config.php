@@ -24,7 +24,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 $config['base_url'] = isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] != "off" ? "https://" : "http://";
-$config['base_url'] .= "localhost/telegram-bot/";
+$config['base_url'] .= "bot.bri.co.id/customercare/";
 /*
 |--------------------------------------------------------------------------
 | Index File
@@ -213,8 +213,7 @@ $config['directory_trigger'] = 'd';
 | your log files will fill up very fast.
 |
 */
-$config['log_threshold'] = 0;
-
+$config['log_threshold'] = 1;
 /*
 |--------------------------------------------------------------------------
 | Error Logging Directory Path
@@ -238,7 +237,7 @@ $config['log_path'] = '';
 | Note: Leaving it blank will default to 'php'.
 |
 */
-$config['log_file_extension'] = '';
+$config['log_file_extension'] = 'log';
 
 /*
 |--------------------------------------------------------------------------
@@ -393,7 +392,7 @@ $config['sess_regenerate_destroy'] = FALSE;
 $config['cookie_prefix']	= '';
 $config['cookie_domain']	= '';
 $config['cookie_path']		= '/';
-$config['cookie_secure']	= FALSE;
+$config['cookie_secure']	= TRUE;
 $config['cookie_httponly'] 	= FALSE;
 
 /*

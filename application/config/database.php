@@ -77,7 +77,7 @@ $db['default'] = array(
 	'dsn'	=> '',
 	'hostname' => 'localhost',
 	'username' => 'root',
-	'password' => '',
+	'password' => 'P@ssw0rd',
 	'database' => 'customer_care',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
@@ -115,5 +115,3 @@ $db['portal_mac'] = array(
 	'stricton' => FALSE,
 	'failover' => array(),
 	'save_queries' => TRUE );
-
-

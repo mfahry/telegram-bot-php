@@ -1,6 +1,6 @@
 <?php
 
-class His_model extends CI_Model {
+class History_chat_model extends CI_Model {
   private $tableName = "tt_history_chat";
 
   public function __construct() {

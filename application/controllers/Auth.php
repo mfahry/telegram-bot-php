@@ -68,15 +68,14 @@ class Auth extends CI_Controller {
         "ticket_solution" => $this->json["solution"],
         "ticket_status" => "SOLVED"
       );
-
       // if update status ticket is success
       if($this->telegram_message_model->change($data, $where)){
         $this->load->library("telegram", array("bot_id" => "331710692:AAGLqH4Yidz7ifiho9EM_y_2xPNfrK3Z-08"));
 
         // get chat id, message id, ticket id, ticket solution, ticket message
-        $where = array(
-          "ticket_id" => $this->json["ticketID"]
-        );
+		$where = array(
+			"ticket_id" => $this->json["ticketID"]
+		);
 
         $telegram_message = $this->telegram_message_model->get($where);
 
@@ -84,7 +83,7 @@ class Auth extends CI_Controller {
           // send reply to user
           $content = array(
   					"chat_id" => $telegram_message->CHAT_ID,
-  					"text" => "Komplain anda dgn ticket ID #".$telegram_message->TICKET_ID." telah selesai.".chr(10)."<b>Permasalahan</b>: ".$telegram_message->MESSAGE.chr(10).chr(10)."<b>Solusi:</b> ".$telegram_message->TICKET_SOLUTION,
+  					"text" => "Komplain anda dgn ticket ID #".$telegram_message->TICKET_ID." telah selesai.".chr(10).chr(10)."<b>Permasalahan</b>: ".$telegram_message->MESSAGE.chr(10).chr(10)."<b>Solusi:</b> ".$telegram_message->TICKET_SOLUTION.chr(10)."---END---",
   					"reply_to_message_id" => $telegram_message->MESSAGE_ID,
             "parse_mode" => "HTML"
           );
@@ -128,10 +127,10 @@ class Auth extends CI_Controller {
       // get chat id, message id, ticket id
       $this->load->model("telegram_message_model");
 
-      $where = array(
-        "ticket_id" => $this->json["ticketID"]
-      );
-      $telegram_message = $this->telegram_message_model->get($where);
+	  $where = array(
+		"ticket_id" => $this->json["ticketID"]
+	  );
+	  $telegram_message = $this->telegram_message_model->get($where);
 
       if($telegram_message != null) {
         $this->load->library("telegram", array("bot_id" => "331710692:AAGLqH4Yidz7ifiho9EM_y_2xPNfrK3Z-08"));
@@ -140,7 +139,7 @@ class Auth extends CI_Controller {
         if($this->json["type"] == "text") {
           $content = array(
             "chat_id" => $telegram_message->CHAT_ID,
-            "text" => $this->json["text"],
+            "text" => $this->json["text"].chr(10)."---END---",
             "reply_to_message_id" => $telegram_message->MESSAGE_ID,
             "parse_mode" => "HTML"
           );
@@ -159,7 +158,21 @@ class Auth extends CI_Controller {
           $this->telegram->sendPhoto($content);
         }
 
-        $result = array("result" => array("success" => "Send message to telegram is success"));
+		// endpushchat
+		$where = array(
+			"username_id" => $telegram_message->USERNAME_ID,
+		);
+
+	    $this->load->model("pushchat_model");
+	    $this->pushchat_model->destroy($where);
+
+		// pushchat
+		$data = array(
+			"username_id" => $telegram_message->USERNAME_ID,
+			"ticket_id" => $this->json["ticketID"]
+		);
+
+		$this->pushchat_model->store($data);
       }
       else {
         $result = array("result" => array("error" => "Send message to telegram is failed"));
@@ -188,4 +201,24 @@ class Auth extends CI_Controller {
     }
   }
 
-}
+  function sendMessageThirdApp() {
+	$token = $this->json["token"];
+	$ip = $this->input->ip_address();
+	if($this->_validAuth($token, $ip) != null){
+		$this->load->library("telegram", array("bot_id" => $this->json["botID"]));
+		$content = array(
+			"chat_id" => $this->json["chatID"],
+			"text" => $this->json["text"],
+			"parse_mode" => "HTML"
+		);
+
+		$this->telegram->sendMessage($content);
+		$result = array("result" => array("success" => "Send message is successed"));
+	}
+	else {
+      $result = array("result" => array("error" => "Authentication is invalid"));
+    }
+
+	echo json_encode($result);
+  }
+ }

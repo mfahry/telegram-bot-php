@@ -181,8 +181,10 @@ class Welcome extends CI_Controller {
 							//	reply message
 							$content = array(
 								"chat_id" => $chat_id,
-								"text" => "Maaf, jumlah tiket dengan status OPEN sudah maksimal dengan nomor ticket ".$ticket_ids.". Maksimal tiket terbuka adalah 5",
-								"reply_to_message_id" => $message_id
+								"text" => "Maaf, jumlah tiket dengan status OPEN sudah maksimal dengan nomor ticket ".$ticket_ids.". Maksimal tiket terbuka adalah 5".chr(10).chr(10).
+												"Silahkan hapus salah satu tiket dengan menggunakan ".chr(10).chr(10)."/closeticket spasi <code>nomor ticket</code>",
+								"reply_to_message_id" => $message_id,
+								"parse_mode" => "HTML"
 							);
 							$this->telegram->sendMessage($content);
 						}
@@ -376,6 +378,70 @@ class Welcome extends CI_Controller {
 						"parse_mode" => "HTML"
 					);
 					$this->telegram->sendMessage($content);
+				}
+				else if($command_checker[0] == "/closeticket" || $command_checker[0] == "/closeticket@customer_care_bot") {
+					//check what text format is valid
+					if(count($command_checker) == 2) {
+						$ticket_id = $command_checker[1];
+
+						// get data from user_accepted_request
+						$where = array(
+							"ticket_id" => $ticket_id,
+							"username_id" => $username_id
+						);
+
+						$user_accepted_request = $this->user_accepted_request_model->get($where);
+
+						//if user_accepted_request is exist
+						if($user_accepted_request != null){
+							$where = array(
+								"username_id" => $username_id,
+								"ticket_id" => $ticket_id,
+								"ticket_status" => "ON PROCESS"
+							);
+
+							// delete telegram message by username id and ticket id
+							$this->telegram_message_model->destroy($where);
+
+							$where = array(
+								"tt_id" => $ticket_id
+							);
+
+							$data = array(
+								"tt_solusi" => "closed by ticket owner",
+								"tt_id_status" => "3"
+							);
+
+							$this->master_mac_model->change($data, $where);
+
+							$content = array(
+								"chat_id" => $chat_id,
+								"text" => "Nomor tiket ".$ticket_id." berhasil diclose oleh user",
+								"reply_to_message_id" => $message_id,
+								"parse_mode" => "HTML"
+							);
+							$this->telegram->sendMessage($content);
+						}
+						else {
+							//	reply error message
+							$content = array(
+								"chat_id" => $chat_id,
+								"text" => "Maaf, tiket sudah solved atau tiket ".$ticket_id." bukan milik anda",
+								"reply_to_message_id" => $message_id
+							);
+							$this->telegram->sendMessage($content);
+						}
+					}
+					else {
+						//	reply error message
+						$content = array(
+							"chat_id" => $chat_id,
+							"text" => "Maaf format teks tidak sesuai. Silahkan menggunakan format /closeticket spasi <code>nomor ticket</code>",
+							"reply_to_message_id" => $message_id,
+							"parse_mode" => "HTML"
+						);
+						$this->telegram->sendMessage($content);
+					}
 				}
 				else {
 					$where = array(
